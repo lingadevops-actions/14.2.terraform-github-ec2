@@ -1,0 +1,27 @@
+# creating ec2 using terraform in GitHub actions
+```
+name: ec2-creation
+on: [push] #triggers
+jobs:
+  terraform:
+    runs-on: ubuntu-latest # Linux OS. We can have window or MAC
+    steps: # stages
+      - name: checkout the code
+        uses: actions/checkout@v5
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_SCCESS_KEY }}
+          aws-region: us-east-1 # Replace with your desired AWS Region.
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+      - name: run init
+        run: terraform init
+      - name: run plan
+        run: terraform plan
+      - name: run apply
+        run: terraform apply -auto-approve 
+```
